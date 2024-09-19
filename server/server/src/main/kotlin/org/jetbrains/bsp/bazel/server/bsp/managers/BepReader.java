@@ -11,6 +11,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.bsp.bazel.server.bep.BepServer;
@@ -31,19 +33,30 @@ public class BepReader {
               try {
                 logger.info("Start listening to BEP events");
                 var stream = new FileInputStream(eventFile);
+                var channel = stream.getChannel();
                 BuildEventStreamProtos.BuildEvent event = null;
-                // It's important not to use the short-circuited ||, so that the events are parsed
-                // every time the loop condition is checked
-                while (!bazelBuildFinished.isDone()
-                    | (event = BuildEventStreamProtos.BuildEvent.parseDelimitedFrom(stream))
-                        != null) {
+                int failureCount = 0;
+                do {
+                  var position = channel.position();
+                  try {
+                    event = BuildEventStreamProtos.BuildEvent.parseDelimitedFrom(stream);
+                    failureCount = 0;
+                  } catch (InvalidProtocolBufferException e) {
+                    // We likely tried to read the input at the same time it was being written to
+                    if (++failureCount > 5) {
+                      throw new RuntimeException(e);
+                    }
+                    channel.position(position);
+                    Thread.sleep(100);
+                    continue;
+                  }
                   if (event != null) {
                     bepServer.handleBuildEventStreamProtosEvent(event);
                     setServerPid(event);
                   } else {
                     Thread.sleep(50);
                   }
-                }
+                } while (!bazelBuildFinished.isDone() || event != null);
                 logger.info("BEP events listening finished");
               } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
