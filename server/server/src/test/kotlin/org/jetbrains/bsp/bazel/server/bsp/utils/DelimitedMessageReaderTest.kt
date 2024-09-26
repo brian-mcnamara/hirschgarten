@@ -2,13 +2,13 @@ package org.jetbrains.bsp.bazel.server.bsp.utils
 
 import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos
 import com.google.protobuf.InvalidProtocolBufferException
+import io.kotest.common.runBlocking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.jetbrains.bsp.bazel.commons.Constants
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.fail
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.PipedInputStream
@@ -82,11 +82,10 @@ class DelimitedMessageReaderTest {
           BuildEventStreamProtos.BuildEvent.parser(),
         )
 
-      try {
-        reader.nextMessage()
-        fail("Exception expected when a partial message was sent")
-      } catch (_: InvalidProtocolBufferException) {
-        // expected
+      Assertions.assertThrows(InvalidProtocolBufferException::class.java) {
+        runBlocking {
+          reader.nextMessage()
+        }
       }
     }
 
