@@ -1,4 +1,4 @@
-package org.jetbrains.bsp.bazel.bazelrunner.utils
+package org.jetbrains.bsp.protocol
 
 import java.nio.file.Path
 import kotlin.io.path.isReadable
@@ -10,6 +10,7 @@ interface BazelInfo {
   val workspaceRoot: Path
   val release: BazelRelease
   val isBzlModEnabled: Boolean
+  val javaHome: Path
 }
 
 data class BazelRelease(val major: Int) {
@@ -37,30 +38,3 @@ data class BazelRelease(val major: Int) {
 }
 
 fun BazelRelease?.orLatestSupported() = this ?: BazelRelease.LATEST_SUPPORTED_MAJOR
-
-data class BasicBazelInfo(
-  override val execRoot: String,
-  override val outputBase: Path,
-  override val workspaceRoot: Path,
-  override val release: BazelRelease,
-  override val isBzlModEnabled: Boolean,
-) : BazelInfo
-
-class LazyBazelInfo(bazelInfoSupplier: () -> BazelInfo) : BazelInfo {
-  private val bazelInfo: BazelInfo by lazy { bazelInfoSupplier() }
-
-  override val execRoot: String
-    get() = bazelInfo.execRoot
-
-  override val outputBase: Path
-    get() = bazelInfo.outputBase
-
-  override val workspaceRoot: Path
-    get() = bazelInfo.workspaceRoot
-
-  override val release: BazelRelease
-    get() = bazelInfo.release
-
-  override val isBzlModEnabled: Boolean
-    get() = bazelInfo.isBzlModEnabled
-}

@@ -3,8 +3,6 @@ package org.jetbrains.bsp.bazel.server.sync.languages
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.jetbrains.bsp.bazel.bazelrunner.utils.BasicBazelInfo
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelRelease
-import org.jetbrains.bsp.bazel.bazelrunner.utils.orLatestSupported
 import org.jetbrains.bsp.bazel.server.model.Language
 import org.jetbrains.bsp.bazel.server.paths.BazelPathsResolver
 import org.jetbrains.bsp.bazel.server.sync.languages.android.AndroidLanguagePlugin
@@ -19,6 +17,8 @@ import org.jetbrains.bsp.bazel.server.sync.languages.rust.RustLanguagePlugin
 import org.jetbrains.bsp.bazel.server.sync.languages.scala.ScalaLanguagePlugin
 import org.jetbrains.bsp.bazel.server.sync.languages.thrift.ThriftLanguagePlugin
 import org.jetbrains.bsp.bazel.workspacecontext.DefaultWorkspaceContextProvider
+import org.jetbrains.bsp.protocol.BazelRelease
+import org.jetbrains.bsp.protocol.orLatestSupported
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -48,6 +48,7 @@ class LanguagePluginServiceTest {
         workspaceRoot = Paths.get(""),
         release = BazelRelease.fromReleaseString("release 6.0.0").orLatestSupported(),
         false,
+        javaHome = Paths.get(""),
       )
     val provider = DefaultWorkspaceContextProvider(Paths.get(""), projectViewFile, dotBazelBspDirPath)
     val bazelPathsResolver = BazelPathsResolver(bazelInfo)

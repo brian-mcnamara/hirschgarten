@@ -1,8 +1,8 @@
 package org.jetbrains.bsp.bazel.server.bsp.utils
 
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelRelease
 import org.jetbrains.bsp.bazel.commons.Constants
 import org.jetbrains.bsp.bazel.server.bsp.info.BspInfo
+import org.jetbrains.bsp.protocol.BazelRelease
 
 class InternalAspectsResolver(val bspInfo: BspInfo, val bazelRelease: BazelRelease) {
   private val prefix: Lazy<String> = lazy { getPrefix() }

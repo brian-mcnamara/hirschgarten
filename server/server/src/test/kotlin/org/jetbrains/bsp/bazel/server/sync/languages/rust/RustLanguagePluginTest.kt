@@ -3,9 +3,9 @@ package org.jetbrains.bsp.bazel.server.sync.languages.rust
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.jetbrains.bsp.bazel.bazelrunner.utils.BasicBazelInfo
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelRelease
-import org.jetbrains.bsp.bazel.bazelrunner.utils.orLatestSupported
 import org.jetbrains.bsp.bazel.server.paths.BazelPathsResolver
+import org.jetbrains.bsp.protocol.BazelRelease
+import org.jetbrains.bsp.protocol.orLatestSupported
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.nio.file.Paths
@@ -26,6 +26,7 @@ class RustLanguagePluginTest {
         workspaceRoot = Paths.get("/Users/user/workspace/bazel-bsp"),
         release = BazelRelease.fromReleaseString("release 6.0.0").orLatestSupported(),
         false,
+        javaHome = Paths.get(""),
       )
 
     bazelPathsResolver = BazelPathsResolver(bazelInfo)

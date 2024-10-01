@@ -338,7 +338,7 @@ class BspProjectMapper(
       documentUri
         .toPath()
         .relativeToOrNull(project.workspaceRoot.toPath()) ?: throw RuntimeException("File path outside of project root")
-    return InverseSourcesQuery.inverseSourcesQuery(documentRelativePath, bazelRunner, project.bazelRelease, cancelChecker)
+    return InverseSourcesQuery.inverseSourcesQuery(documentRelativePath, bazelRunner, project.bazelInfo.release, cancelChecker)
   }
 
   fun dependencySources(project: Project, dependencySourcesParams: DependencySourcesParams): DependencySourcesResult {

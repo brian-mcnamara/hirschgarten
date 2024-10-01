@@ -42,6 +42,7 @@ import org.eclipse.lsp4j.jsonrpc.CancelChecker
 import org.jetbrains.bsp.bazel.server.benchmark.TelemetryConfig
 import org.jetbrains.bsp.bazel.server.benchmark.setupTelemetry
 import org.jetbrains.bsp.bazel.server.model.Language
+import org.jetbrains.bsp.protocol.BazelInfo
 import org.jetbrains.bsp.protocol.JvmBinaryJarsParams
 import org.jetbrains.bsp.protocol.JvmBinaryJarsResult
 import org.jetbrains.bsp.protocol.NonModuleTargetsResult
@@ -206,5 +207,10 @@ class ProjectSyncService(
   fun rustWorkspace(cancelChecker: CancelChecker, params: RustWorkspaceParams): RustWorkspaceResult {
     val project = projectProvider.get(cancelChecker)
     return bspMapper.rustWorkspace(project, params)
+  }
+
+  fun getBazelInfo(cancelChecker: CancelChecker): BazelInfo {
+    val project = projectProvider.get(cancelChecker)
+    return project.bazelInfo
   }
 }

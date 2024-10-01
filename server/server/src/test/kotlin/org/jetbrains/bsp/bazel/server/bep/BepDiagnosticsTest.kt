@@ -11,10 +11,10 @@ import ch.epfl.scala.bsp4j.TaskProgressParams
 import ch.epfl.scala.bsp4j.TaskStartParams
 import com.google.devtools.build.lib.buildeventstream.BuildEventStreamProtos
 import org.jetbrains.bsp.bazel.bazelrunner.utils.BasicBazelInfo
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelRelease
 import org.jetbrains.bsp.bazel.commons.Constants
 import org.jetbrains.bsp.bazel.server.diagnostics.DiagnosticsService
 import org.jetbrains.bsp.bazel.server.paths.BazelPathsResolver
+import org.jetbrains.bsp.protocol.BazelRelease
 import org.jetbrains.bsp.protocol.JoinedBuildClient
 import org.jetbrains.bsp.protocol.PublishOutputParams
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -60,6 +60,7 @@ class BepDiagnosticsTest {
         workspaceRoot = workspaceRoot,
         release = BazelRelease(7),
         isBzlModEnabled = true,
+        javaHome = Path(""),
       )
     return BepServer(
       bspClient = client,

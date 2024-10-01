@@ -2,10 +2,10 @@ package org.jetbrains.bsp.bazel.bazelrunner
 
 import org.eclipse.lsp4j.jsonrpc.CancelChecker
 import org.jetbrains.bsp.bazel.bazelrunner.utils.BasicBazelInfo
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelInfo
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelRelease
 import org.jetbrains.bsp.bazel.bazelrunner.utils.LazyBazelInfo
-import org.jetbrains.bsp.bazel.bazelrunner.utils.orLatestSupported
+import org.jetbrains.bsp.protocol.BazelInfo
+import org.jetbrains.bsp.protocol.BazelRelease
+import org.jetbrains.bsp.protocol.orLatestSupported
 import java.nio.file.Paths
 
 private const val RELEASE = "release"
@@ -13,6 +13,7 @@ private const val EXECUTION_ROOT = "execution_root"
 private const val OUTPUT_BASE = "output_base"
 private const val WORKSPACE = "workspace"
 private const val STARLARK_SEMANTICS = "starlark-semantics"
+private const val JAVA_HOME = "java-home"
 
 class BazelInfoResolver(private val bazelRunner: BazelRunner) {
   fun resolveBazelInfo(cancelChecker: CancelChecker): BazelInfo = LazyBazelInfo { bazelInfoFromBazel(cancelChecker) }
@@ -21,7 +22,7 @@ class BazelInfoResolver(private val bazelRunner: BazelRunner) {
     val command =
       bazelRunner.buildBazelCommand {
         info {
-          options.addAll(listOf(RELEASE, EXECUTION_ROOT, OUTPUT_BASE, WORKSPACE, STARLARK_SEMANTICS))
+          options.addAll(listOf(RELEASE, EXECUTION_ROOT, OUTPUT_BASE, WORKSPACE, STARLARK_SEMANTICS, JAVA_HOME))
         }
       }
     val processResult =
@@ -67,6 +68,7 @@ class BazelInfoResolver(private val bazelRunner: BazelRunner) {
       workspaceRoot = Paths.get(extract(WORKSPACE)),
       release = bazelReleaseVersion,
       isBzlModEnabled = isBzlModEnabled,
+      javaHome = Paths.get(extract(JAVA_HOME)),
     )
   }
 

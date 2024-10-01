@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelInfo
 import org.jetbrains.bsp.bazel.info.BspTargetInfo.FileLocation
 import org.jetbrains.bsp.bazel.info.BspTargetInfo.TargetInfo
 import org.jetbrains.bsp.bazel.logger.BspClientLogger
@@ -32,6 +31,7 @@ import org.jetbrains.bsp.bazel.server.sync.languages.rust.RustModule
 import org.jetbrains.bsp.bazel.workspacecontext.WorkspaceContext
 import org.jetbrains.bsp.bazel.workspacecontext.isGoEnabled
 import org.jetbrains.bsp.bazel.workspacecontext.isRustEnabled
+import org.jetbrains.bsp.protocol.BazelInfo
 import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
@@ -228,7 +228,7 @@ class BazelProjectMapper(
       goLibrariesToImport,
       invalidTargets,
       nonModuleTargets,
-      bazelInfo.release,
+      bazelInfo,
     )
   }
 

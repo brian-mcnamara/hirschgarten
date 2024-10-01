@@ -46,6 +46,7 @@ import ch.epfl.scala.bsp4j.SourcesResult
 import ch.epfl.scala.bsp4j.TestParams
 import ch.epfl.scala.bsp4j.TestResult
 import ch.epfl.scala.bsp4j.WorkspaceBuildTargetsResult
+import org.jetbrains.bsp.protocol.BazelInfo
 import org.jetbrains.bsp.protocol.JoinedBuildServer
 import org.jetbrains.bsp.protocol.JvmBinaryJarsParams
 import org.jetbrains.bsp.protocol.JvmBinaryJarsResult
@@ -94,6 +95,7 @@ class BuildServerMock(
   private val workspaceBuildTargetsPartial: WorkspaceBuildTargetsResult? = null,
   private val pythonOptionsResult: PythonOptionsResult? = null,
   private val rustWorkspaceResult: RustWorkspaceResult? = null,
+  private val bazelInfo: BazelInfo? = null,
 ) : JoinedBuildServer {
   override fun buildInitialize(initializeBuildParams: InitializeBuildParams): CompletableFuture<InitializeBuildResult> =
     wrapInFuture(initializeBuildResult)
@@ -194,4 +196,6 @@ class BuildServerMock(
 
   private fun <T> wrapInFuture(value: T?): CompletableFuture<T> =
     value?.let { CompletableFuture.completedFuture(it) } ?: CompletableFuture.failedFuture(Exception("mock value is null"))
+
+  override fun bazelInfo(): CompletableFuture<BazelInfo> = wrapInFuture(bazelInfo)
 }

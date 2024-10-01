@@ -8,12 +8,13 @@ import ch.epfl.scala.bsp4j.DependencyModulesResult
 import ch.epfl.scala.bsp4j.MavenDependencyModule
 import ch.epfl.scala.bsp4j.MavenDependencyModuleArtifact
 import io.kotest.matchers.shouldBe
-import org.jetbrains.bsp.bazel.bazelrunner.utils.BazelRelease
+import org.jetbrains.bsp.bazel.bazelrunner.utils.BasicBazelInfo
 import org.jetbrains.bsp.bazel.server.model.Label
 import org.jetbrains.bsp.bazel.server.model.Library
 import org.jetbrains.bsp.bazel.server.model.Module
 import org.jetbrains.bsp.bazel.server.model.Project
 import org.jetbrains.bsp.bazel.server.model.SourceSet
+import org.jetbrains.bsp.protocol.BazelRelease
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
 import java.net.URI
@@ -129,7 +130,24 @@ class BspProjectMapperTest {
     }
 
     val libraries = allLibraries.associate({ it.label to it })
-    val project = Project(currentUri, allModules, emptyMap(), libraries, emptyMap(), emptyList(), emptyList(), BazelRelease(6))
+    val project =
+      Project(
+        currentUri,
+        allModules,
+        emptyMap(),
+        libraries,
+        emptyMap(),
+        emptyList(),
+        emptyList(),
+        BasicBazelInfo(
+          release = BazelRelease(6),
+          javaHome = Paths.get(""),
+          execRoot = "",
+          outputBase = Paths.get(""),
+          workspaceRoot = Paths.get(""),
+          isBzlModEnabled = false,
+        ),
+      )
 
     val deps =
       BspProjectMapper.buildDependencyModulesStatic(

@@ -48,6 +48,7 @@ import ch.epfl.scala.bsp4j.TestResult
 import ch.epfl.scala.bsp4j.WorkspaceBuildTargetsResult
 import org.jetbrains.bsp.bazel.server.sync.ExecuteService
 import org.jetbrains.bsp.bazel.server.sync.ProjectSyncService
+import org.jetbrains.bsp.protocol.BazelInfo
 import org.jetbrains.bsp.protocol.JoinedBuildClient
 import org.jetbrains.bsp.protocol.JoinedBuildServer
 import org.jetbrains.bsp.protocol.JvmBinaryJarsParams
@@ -234,4 +235,6 @@ class BspServerApi(private val bazelServicesBuilder: (JoinedBuildClient) -> Baze
 
   override fun rustWorkspace(params: RustWorkspaceParams): CompletableFuture<RustWorkspaceResult> =
     runner.handleRequest("buildTarget/rustWorkspace", projectSyncService::rustWorkspace, params)
+
+  override fun bazelInfo(): CompletableFuture<BazelInfo> = runner.handleRequest("bazel/info", projectSyncService::getBazelInfo)
 }

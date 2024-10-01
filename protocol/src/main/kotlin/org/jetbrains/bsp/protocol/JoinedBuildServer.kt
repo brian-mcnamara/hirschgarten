@@ -16,4 +16,5 @@ interface JoinedBuildServer :
   CppBuildServer,
   BazelBuildServer,
   PythonBuildServer,
-  RustBuildServer
+  RustBuildServer,
+  BazelInfoServer
