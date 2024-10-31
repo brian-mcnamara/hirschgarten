@@ -1,5 +1,5 @@
 load("@rules_intellij//testing:test_defs_kt.bzl", "intellij_integration_test_suite")
-load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library")
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library", "kt_jvm_test")
 load("@rules_proto//proto:defs.bzl", "proto_library")
 
 exports_files(["main/resources/META-INF/base.xml"])
@@ -59,6 +59,30 @@ kt_jvm_library(
         "@rules_intellij//third_party/performance",
         "@rules_intellij//third_party/python",
     ],
+)
+
+kt_jvm_library(
+    name = "example-test-library",
+    srcs = [
+        "test/kotlin/TestLibExample.kt",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@maven//:org_junit_jupiter_junit_jupiter",
+        "@maven//:org_junit_platform_junit_platform_console",
+        "@maven//:io_kotest_kotest_assertions_api_jvm",
+        "@maven//:io_kotest_kotest_assertions_core_jvm",
+        "@maven//:io_kotest_kotest_assertions_shared_jvm",
+        "@maven//:io_kotest_kotest_common_jvm",
+    ],
+)
+
+kt_jvm_test (
+    name = "example-test",
+    test_class = "TestLibExample",
+    main_class = "org.junit.platform.console.ConsoleLauncher",
+    args = ["--select-class=TestLibExample"],
+    runtime_deps = [":example-test-library"],
 )
 
 intellij_integration_test_suite(
