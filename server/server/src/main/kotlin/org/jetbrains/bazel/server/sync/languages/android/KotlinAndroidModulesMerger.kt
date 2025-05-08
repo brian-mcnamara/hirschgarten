@@ -92,6 +92,8 @@ class KotlinAndroidModulesMerger {
         languageData = kotlinAndroidLanguageData,
         environmentVariables = kotlinModule.environmentVariables + androidModule.environmentVariables,
         kindString = parentModule.kindString,
+        builderPath = kotlinModule.builderPath,
+        builderArgs = kotlinModule.builderArgs,
       )
 
     return MergedKotlinAndroidModule(

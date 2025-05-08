@@ -38,6 +38,9 @@
     <depends optional="true" config-file="withPython.xml">com.intellij.modules.python</depends>
 
     <extensionPoints>
+        <extensionPoint qualifiedName="org.jetbrains.bazel.executionArgumentProvider"
+                        interface="org.jetbrains.bazel.jvm.run.BazelExecutionArgumentProvider"
+                        dynamic="true"/>
         <extensionPoint qualifiedName="org.jetbrains.bazel.sourceTypeIconProvider"
                         interface="org.jetbrains.bazel.utils.SourceTypeIconProvider"
                         dynamic="true"/>
@@ -168,7 +171,10 @@
         <projectViewNodeDecorator
                 implementation="org.jetbrains.bazel.ui.projectTree.BazelProjectViewNodeDecorator"/>
         <projectTaskRunner
+                id="bsp.BazelProjectTaskRunner"
                 implementation="org.jetbrains.bazel.buildTask.BazelProjectTaskRunner"/>
+        <projectTaskRunner implementation="org.jetbrains.bazel.fastbuild.BazelFastBuildProjectTaskRunner"
+                           order="before bsp.BazelProjectTaskRunner"/>
         <programRunner implementation="org.jetbrains.bazel.jvm.run.BazelJvmDebugRunner"/>
 
         <directoryProjectConfigurator
@@ -202,6 +208,10 @@
         <registryKey defaultValue="false"
                      description="Enable partial sync action for a target."
                      key="bsp.enable.partial.sync"/>
+
+        <registryKey defaultValue="false"
+                     description="Enables a fast compile mechanism for JVM languages by delegating directly to the bazel builder"
+                     key="bsp.enable.jvm.fastbuild" />
 
         <statusBarWidgetFactory id="BazelFileTargetsWidget"
                                 implementation="org.jetbrains.bazel.ui.widgets.fileTargets.BazelFileTargetsWidgetFactory"/>
@@ -250,7 +260,12 @@
                   topic="com.intellij.openapi.vfs.newvfs.BulkFileListener"/>
     </applicationListeners>
 
+    <projectListeners>
+        <listener class="org.jetbrains.bazel.fastbuild.FastBuildArgumentProvider$FastBuildExecutionListener" topic="com.intellij.execution.ExecutionListener" />
+    </projectListeners>
+
     <extensions defaultExtensionNs="org.jetbrains.bazel">
+        <executionArgumentProvider implementation="org.jetbrains.bazel.fastbuild.FastBuildArgumentProvider"/>
         <toolWindowConfigFileProviderExtension
                 implementation="org.jetbrains.bazel.extension.BazelToolWindowConfigFileProviderExtension"/>
 

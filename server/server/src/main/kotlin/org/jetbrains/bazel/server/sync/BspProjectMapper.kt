@@ -33,6 +33,8 @@ import org.jetbrains.bsp.protocol.DependencySourcesItem
 import org.jetbrains.bsp.protocol.DependencySourcesParams
 import org.jetbrains.bsp.protocol.DependencySourcesResult
 import org.jetbrains.bsp.protocol.DirectoryItem
+import org.jetbrains.bsp.protocol.FastBuildCommand
+import org.jetbrains.bsp.protocol.FastBuildParams
 import org.jetbrains.bsp.protocol.GoLibraryItem
 import org.jetbrains.bsp.protocol.InverseSourcesParams
 import org.jetbrains.bsp.protocol.InverseSourcesResult
@@ -337,5 +339,11 @@ class BspProjectMapper(
   fun resolveRemoteToLocal(params: BazelResolveRemoteToLocalParams): BazelResolveRemoteToLocalResult {
     val resolve = languagePluginsService.goLanguagePlugin::resolveRemoteToLocal
     return resolve(params)
+  }
+
+  fun fastBuildTarget(project: AspectSyncProject, params: FastBuildParams): FastBuildCommand? {
+    val module = project.findModule(params.label) ?: return null
+    val language = languagePluginsService.getPlugin(module.languages)
+    return language.prepareFastBuild(module, params)
   }
 }

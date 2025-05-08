@@ -68,12 +68,15 @@ class JvmTestWithDebugCommandLineState(
   override suspend fun startBsp(server: JoinedBuildServer) {
     val configuration = environment.runProfile as BazelRunConfiguration
     val targetIds = configuration.targets
+    val additionaArguments = BazelExecutionArgumentProvider.ep.extensions
+      .filter { it.isApplicable(configuration) }
+      .flatMap { it.getAdditionalArguments(configuration) }
     val testParams =
       TestParams(
         targets = targetIds,
         originId = originId,
         workingDirectory = settings.workingDirectory,
-        arguments = transformProgramArguments(settings.programArguments),
+        arguments = transformProgramArguments(settings.programArguments) + additionaArguments,
         environmentVariables = settings.env.envs,
         debug = DebugType.JDWP(getConnectionPort()),
         testFilter = settings.testFilter,

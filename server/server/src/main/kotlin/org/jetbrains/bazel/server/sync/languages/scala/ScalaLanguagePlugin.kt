@@ -4,15 +4,20 @@ import org.jetbrains.bazel.info.BspTargetInfo
 import org.jetbrains.bazel.label.Label
 import org.jetbrains.bazel.server.dependencygraph.DependencyGraph
 import org.jetbrains.bazel.server.label.label
+import org.jetbrains.bazel.server.model.Module
 import org.jetbrains.bazel.server.paths.BazelPathsResolver
 import org.jetbrains.bazel.server.sync.languages.JVMLanguagePluginParser
 import org.jetbrains.bazel.server.sync.languages.LanguagePlugin
 import org.jetbrains.bazel.server.sync.languages.java.JavaLanguagePlugin
 import org.jetbrains.bazel.workspacecontext.WorkspaceContext
 import org.jetbrains.bsp.protocol.BuildTarget
+import org.jetbrains.bsp.protocol.FastBuildCommand
+import org.jetbrains.bsp.protocol.FastBuildParams
 import org.jetbrains.bsp.protocol.ScalaBuildTarget
 import org.jetbrains.bsp.protocol.ScalaPlatform
 import java.nio.file.Path
+import kotlin.io.path.name
+import kotlin.io.path.pathString
 
 class ScalaLanguagePlugin(private val javaLanguagePlugin: JavaLanguagePlugin, private val bazelPathsResolver: BazelPathsResolver) :
   LanguagePlugin<ScalaModule>() {
@@ -48,7 +53,7 @@ class ScalaLanguagePlugin(private val javaLanguagePlugin: JavaLanguagePlugin, pr
     val scalaTargetInfo = targetInfo.scalaTargetInfo
     val sdk = scalaSdks[targetInfo.label()] ?: return null
     val scalacOpts = scalaTargetInfo.scalacOptsList
-    return ScalaModule(sdk, scalacOpts, javaLanguagePlugin.resolveModule(targetInfo))
+    return ScalaModule(sdk, scalacOpts, javaLanguagePlugin.resolveModule(targetInfo), scalaTargetInfo.scalac)
   }
 
   override fun dependencySources(targetInfo: BspTargetInfo.TargetInfo, dependencyGraph: DependencyGraph): Set<Path> =
@@ -71,4 +76,21 @@ class ScalaLanguagePlugin(private val javaLanguagePlugin: JavaLanguagePlugin, pr
 
   override fun calculateJvmPackagePrefix(source: Path): String? =
     JVMLanguagePluginParser.calculateJVMSourceRootAndAdditionalData(source, true)
+
+  override fun prepareFastBuild(
+    module: Module,
+    params: FastBuildParams
+  ): FastBuildCommand? {
+    val languageData = module.languageData
+    if (languageData is ScalaModule) {
+      val targetJar = languageData.javaModule?.binaryOutputs?.first() ?: TODO()
+      val targetParams = targetJar.parent.resolve(targetJar.name + "-0.params")
+
+      val buildOutputJar = params.tempDir.resolve("build.jar")
+      val buildParams = ScalaManifestUtil.updateAndWriteCompileParams(targetParams, params.tempDir, buildOutputJar, params.file, bazelPathsResolver.workspaceRoot(), targetJar)
+
+      return FastBuildCommand(languageData.scalac ?: TODO(), listOf("@${buildParams.pathString}"), buildOutputJar)
+    }
+    return null
+  }
 }

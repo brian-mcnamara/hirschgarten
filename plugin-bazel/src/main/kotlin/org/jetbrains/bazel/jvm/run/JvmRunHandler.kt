@@ -73,11 +73,14 @@ class JvmRunWithDebugCommandLineState(
   override suspend fun startBsp(server: JoinedBuildServer) {
     val configuration = environment.runProfile as BazelRunConfiguration
     val targetId = configuration.targets.single()
+    val additionaArguments = BazelExecutionArgumentProvider.ep.extensions
+      .filter { it.isApplicable(configuration) }
+      .flatMap { it.getAdditionalArguments(configuration) }
     val runParams =
       RunParams(
         targetId,
         originId = originId,
-        arguments = transformProgramArguments(settings.programArguments),
+        arguments = transformProgramArguments(settings.programArguments) + additionaArguments,
         environmentVariables = settings.env.envs,
         workingDirectory = settings.workingDirectory,
         additionalBazelParams = settings.additionalBazelParams,

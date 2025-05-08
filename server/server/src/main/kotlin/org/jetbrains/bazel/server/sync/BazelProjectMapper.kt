@@ -1021,6 +1021,8 @@ class BazelProjectMapper(
     val languageData = languagePlugin.resolveModule(target)
     val sourceDependencies = languagePlugin.dependencySources(target, dependencyGraph)
     val environment = environmentItem(target)
+    val builderScript = languagePlugin.resolveBuilderPath(target)
+    val builderArgs = languagePlugin.resolveBuilderArgs(target)
     return Module(
       label = label,
       isSynthetic = false,
@@ -1034,6 +1036,8 @@ class BazelProjectMapper(
       languageData = languageData,
       environmentVariables = environment,
       kindString = target.kind,
+      builderPath = builderScript,
+      builderArgs = builderArgs,
     )
   }
 

@@ -64,6 +64,7 @@ def extract_scala_info(target, ctx, output_groups, **kwargs):
         common_scalac_opts = ctx.toolchains[SCALA_TOOLCHAIN].scalacopts
         if hasattr(rule_attr, "_scalac"):
             scalac = rule_attr._scalac
+            scala_info["scalac"] = scalac.files_to_run.executable.path
             compiler_classpath = find_scalac_classpath(scalac.default_runfiles.files.to_list())
             if compiler_classpath:
                 scala_info["compiler_classpath"] = map(file_location, compiler_classpath)
@@ -74,5 +75,6 @@ def extract_scala_info(target, ctx, output_groups, **kwargs):
     scala_info["scalac_opts"] = common_scalac_opts + getattr(ctx.rule.attr, "scalacopts", [])
 
     scala_info["scalatest_classpath"] = extract_scalatest_classpath(rule_attr)
+
 
     return dict(scala_target_info = struct(**scala_info)), None

@@ -232,6 +232,8 @@ class ProjectTest {
       languageData = null,
       environmentVariables = emptyMap(),
       kindString = "kindString",
+      builderPath = null,
+      builderArgs = emptyList(),
     )
 
   private fun String.toMockLibrary(): Library =

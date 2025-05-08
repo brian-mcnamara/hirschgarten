@@ -57,9 +57,11 @@ interface JoinedBuildServer {
 
   suspend fun workspaceBazelRepoMapping(): WorkspaceBazelRepoMappingResult
 
-  suspend fun workspaceBazelBinPath(): WorkspaceBazelBinPathResult
+  suspend fun workspaceBazelBinPath(): WorkspaceBazelPathsResult
 
   suspend fun workspaceName(): WorkspaceNameResult
 
   suspend fun workspaceContext(): WorkspaceContext
+
+  suspend fun fastBuildFile(params: FastBuildParams): FastBuildCommand?
 }

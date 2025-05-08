@@ -15,6 +15,8 @@ import org.jetbrains.bsp.protocol.CppOptionsParams
 import org.jetbrains.bsp.protocol.CppOptionsResult
 import org.jetbrains.bsp.protocol.DependencySourcesParams
 import org.jetbrains.bsp.protocol.DependencySourcesResult
+import org.jetbrains.bsp.protocol.FastBuildCommand
+import org.jetbrains.bsp.protocol.FastBuildParams
 import org.jetbrains.bsp.protocol.InverseSourcesParams
 import org.jetbrains.bsp.protocol.InverseSourcesResult
 import org.jetbrains.bsp.protocol.JavacOptionsParams
@@ -27,7 +29,7 @@ import org.jetbrains.bsp.protocol.JvmTestEnvironmentParams
 import org.jetbrains.bsp.protocol.JvmTestEnvironmentResult
 import org.jetbrains.bsp.protocol.ScalacOptionsParams
 import org.jetbrains.bsp.protocol.ScalacOptionsResult
-import org.jetbrains.bsp.protocol.WorkspaceBazelBinPathResult
+import org.jetbrains.bsp.protocol.WorkspaceBazelPathsResult
 import org.jetbrains.bsp.protocol.WorkspaceBazelRepoMappingResult
 import org.jetbrains.bsp.protocol.WorkspaceBuildTargetsFirstPhaseParams
 import org.jetbrains.bsp.protocol.WorkspaceBuildTargetsResult
@@ -99,7 +101,7 @@ class ProjectSyncService(
     return bspMapper.workspaceBazelRepoMapping(project)
   }
 
-  fun workspaceBazelBinPath(): WorkspaceBazelBinPathResult = WorkspaceBazelBinPathResult(bazelInfo.bazelBin.toString())
+  fun workspaceBazelPaths(): WorkspaceBazelPathsResult = WorkspaceBazelPathsResult(bazelInfo.bazelBin.toString(), bazelInfo.execRoot.toString())
 
   suspend fun workspaceName(): WorkspaceNameResult {
     val project = projectProvider.get() as? AspectSyncProject ?: return WorkspaceNameResult(null)
@@ -144,6 +146,11 @@ class ProjectSyncService(
   suspend fun buildTargetScalacOptions(params: ScalacOptionsParams): ScalacOptionsResult {
     val project = projectProvider.get() as? AspectSyncProject ?: return ScalacOptionsResult(emptyList())
     return bspMapper.buildTargetScalacOptions(project, params)
+  }
+
+  suspend fun fastBuildTarget(params: FastBuildParams): FastBuildCommand? {
+    val project = projectProvider.get() as? AspectSyncProject ?: TODO()
+    return bspMapper.fastBuildTarget(project, params)
   }
 
   fun resolveLocalToRemote(params: BazelResolveLocalToRemoteParams): BazelResolveLocalToRemoteResult =
