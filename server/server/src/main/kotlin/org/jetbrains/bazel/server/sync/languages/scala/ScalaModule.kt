@@ -14,6 +14,5 @@ data class ScalaSdk(
 data class ScalaModule(
   val sdk: ScalaSdk,
   val scalacOpts: List<String>,
-  val javaModule: JavaModule?,
-  val scalac: String?
+  val javaModule: JavaModule?
 ) : LanguageData

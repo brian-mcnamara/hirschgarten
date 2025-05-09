@@ -53,7 +53,7 @@ class ScalaLanguagePlugin(private val javaLanguagePlugin: JavaLanguagePlugin, pr
     val scalaTargetInfo = targetInfo.scalaTargetInfo
     val sdk = scalaSdks[targetInfo.label()] ?: return null
     val scalacOpts = scalaTargetInfo.scalacOptsList
-    return ScalaModule(sdk, scalacOpts, javaLanguagePlugin.resolveModule(targetInfo), scalaTargetInfo.scalac)
+    return ScalaModule(sdk, scalacOpts, javaLanguagePlugin.resolveModule(targetInfo))
   }
 
   override fun dependencySources(targetInfo: BspTargetInfo.TargetInfo, dependencyGraph: DependencyGraph): Set<Path> =
@@ -77,6 +77,14 @@ class ScalaLanguagePlugin(private val javaLanguagePlugin: JavaLanguagePlugin, pr
   override fun calculateJvmPackagePrefix(source: Path): String? =
     JVMLanguagePluginParser.calculateJVMSourceRootAndAdditionalData(source, true)
 
+  override fun resolveBuilderPath(targetInfo: BspTargetInfo.TargetInfo): String? {
+    if (targetInfo.hasScalaTargetInfo()) {
+      return targetInfo.scalaTargetInfo.scalac
+    }
+    return null
+  }
+
+
   override fun prepareFastBuild(
     module: Module,
     params: FastBuildParams
@@ -89,7 +97,7 @@ class ScalaLanguagePlugin(private val javaLanguagePlugin: JavaLanguagePlugin, pr
       val buildOutputJar = params.tempDir.resolve("build.jar")
       val buildParams = ScalaManifestUtil.updateAndWriteCompileParams(targetParams, params.tempDir, buildOutputJar, params.file, bazelPathsResolver.workspaceRoot(), targetJar)
 
-      return FastBuildCommand(languageData.scalac ?: TODO(), listOf("@${buildParams.pathString}"), buildOutputJar)
+      return FastBuildCommand(module.builderPath ?: TODO(), listOf("@${buildParams.pathString}"), buildOutputJar)
     }
     return null
   }

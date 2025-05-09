@@ -42,7 +42,6 @@ class BazelFastBuildProjectTaskRunner: ProjectTaskRunner() {
     return Registry.`is`(FastBuildUtils.fastBuildEnabledKey) &&
       project.isBazelProject &&
       project.isTrusted() &&
-      getRunningBazelConfigs(project).isNotEmpty() &&
       canRun(projectTask)
   }
 
@@ -53,6 +52,7 @@ class BazelFastBuildProjectTaskRunner: ProjectTaskRunner() {
   ): Promise<Result> {
     val moduleBuildTasks = tasks.filterIsInstance<ModuleFilesBuildTask>()
     val result = AsyncPromise<Result>()
+    System.out.println("testinggg")
     BazelCoroutineService.getInstance(project).startAsync {
       runInEdt {
         FileDocumentManager.getInstance().saveAllDocuments()
